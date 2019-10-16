@@ -1,0 +1,468 @@
+﻿<Window x:Class="FancyCandleChartDemo.MainWindow"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FancyCandleChartDemo"
+        xmlns:fancy_candles="clr-namespace:FancyCandles;assembly=FancyCandles"
+        xmlns:fancy_wait_indicators="clr-namespace:FancyWaitIndicators;assembly=FancyWaitIndicators"
+        mc:Ignorable="d"
+        Title="CandleChart Demo" Height="450" Width="800">
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="hoursProvider" ObjectType="{x:Type local:DateAndTimeDataProvider}" MethodName="GetHours"/>
+        <ObjectDataProvider x:Key="minutesProvider" ObjectType="{x:Type local:DateAndTimeDataProvider}" MethodName="GetMinutes"/>
+
+        <local:PenFromBrushAndThicknessConverter x:Key="penFromBrushAndThicknessConverter"/>
+        <local:BoolAndNotBoolConverter x:Key="bool_and_notBoolConverter"/>
+        <local:NotBoolConverter x:Key="notBoolConverter"/>
+
+        <fancy_candles:CandleChart x:Key="dummyCandleChartInstance"/>
+        <!-- Only for the trick to bind to the static properties. -->
+
+        <DataTemplate x:Key="expanderHeader">
+            <TextBlock Text="{Binding}"   
+               FontStyle="Italic" 
+               TextDecorations="Underline"/>
+        </DataTemplate>
+
+        <Style TargetType="Expander">
+            <Setter Property="Margin" Value="0 0 0 0" />
+            <Setter Property="HeaderTemplate" Value="{StaticResource expanderHeader}" />
+        </Style>
+
+        <Style x:Key="ExpanderContent">
+            <Setter Property="FrameworkElement.Margin" Value="25 5 0 10" />
+        </Style>
+
+        <ObjectDataProvider x:Key="allVerticalAlignmentValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="VerticalAlignment"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="allHorizontalAlignmentValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="HorizontalAlignment"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+    </Window.Resources>
+
+    <Window.DataContext>
+        <local:VM x:Name="dataContextVM"/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <fancy_candles:CandleChart Grid.Column="0" Grid.Row="0" x:Name="myCandleChart" 
+                                   PriceChartTopMargin="{Binding ElementName=priceChartTopMargin, Path=Text}"
+                                   PriceChartBottomMargin="{Binding ElementName=priceChartBottomMargin, Path=Text}"
+                                   VolumeHistogramTopMargin="{Binding ElementName=volumeHistogramTopMargin, Path=Text}"
+                                   VolumeHistogramBottomMargin="{Binding ElementName=volumeHistogramBottomMargin, Path=Text}"
+                                   VolumeBarWidthToCandleWidthRatio="{Binding ElementName=volumeBarWidthToCandleWidthRatio, Path=Text}"
+                                   ChartAreaBackground="{Binding ElementName=chartAreaBackground, Path=Text}"
+                                   LegendText="{Binding Path=Ticker}"
+                                   LegendMargin="{Binding ElementName=legendMargin, Path=Text}"
+                                   LegendForeground="{Binding ElementName=legendForeground, Path=Text}"
+                                   LegendFontSize="{Binding ElementName=legendFontSize, Path=Text}"
+                                   LegendFontWeight="{Binding ElementName=legendFontWeight, Path=Text}"
+                                   LegendHorizontalAlignment="{Binding ElementName=legendHorizontalAlignment, Path=Text}"
+                                   LegendVerticalAlignment="{Binding ElementName=legendVerticalAlignment, Path=Text}"
+                                   InitialCandleWidth="7" InitialGapBetweenCandles="1" 
+                                   TimeTickFontSize="{Binding ElementName=timeTickFontSize, Path=Text}" 
+                                   PriceTickFontSize="{Binding ElementName=priceTickFontSize, Path=Text}" 
+                                   GapBetweenPriceTickLabels="10"
+                                   CandlesSource="{Binding Path=Candles}" 
+                                   HideMinorVerticalGridlines="{Binding ElementName=hideMinorVerticalGridlines, Path=IsChecked}" 
+                                   IsVolumePanelVisible="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
+                                   IsHorizontalGridlinesEnabled="{Binding ElementName=isHorizontalGridlinesEnabled, Path=IsChecked}" 
+                                   IsVerticalGridlinesEnabled="{Binding ElementName=isVerticalGridlinesEnabled, Path=IsChecked}"
+                                   IsCrossLinesVisible="{Binding ElementName=isCrossLinesVisible, Path=IsChecked}"
+                                   CrossLinesBrush="{Binding ElementName=crossLinesBrush, Path=Text}"
+                                   IsCrossPriceVisible="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"
+                                   CrossPriceBackground="{Binding ElementName=crossPriceBackground, Path=Text}"
+                                   CrossPriceForeground="{Binding ElementName=crossPriceForeground, Path=Text}"
+                                   ScrollBarBackground="{Binding ElementName=scrollBarBackground, Path=Text}"
+                                   ScrollBarHeight="{Binding ElementName=scrollBarHeight, Path=Text}" 
+                                   DisabledFill="{Binding ElementName=disabledFill, Path=Text}"
+                                   BullishCandleBrush="{Binding ElementName=bullishCandleBrush, Path=Text}"
+                                   BearishCandleBrush="{Binding ElementName=bearishCandleBrush, Path=Text}"
+                                   BullishVolumeBarBrush="{Binding ElementName=bullishVolumeBarBrush, Path=Text}"
+                                   BearishVolumeBarBrush="{Binding ElementName=bearishVolumeBarBrush, Path=Text}" >
+
+            <fancy_candles:CandleChart.IsEnabled>
+                <MultiBinding Converter="{StaticResource bool_and_notBoolConverter}">
+                    <Binding ElementName="isEnabled" Path="IsChecked"/>
+                    <Binding Path="IsCandlesLoading"/>
+                </MultiBinding>
+            </fancy_candles:CandleChart.IsEnabled>
+
+            <fancy_candles:CandleChart.HorizontalGridlinesPen>
+                <MultiBinding Converter="{StaticResource penFromBrushAndThicknessConverter}">
+                    <Binding ElementName="lineForBrushAndThickness_HorizontalGridlinesPen" Path="Stroke" Mode="OneWay"/>
+                    <Binding ElementName="lineForBrushAndThickness_HorizontalGridlinesPen" Path="StrokeThickness" Mode="OneWay"/>
+                </MultiBinding>
+            </fancy_candles:CandleChart.HorizontalGridlinesPen>
+
+            <fancy_candles:CandleChart.VerticalGridlinesPen>
+                <MultiBinding Converter="{StaticResource penFromBrushAndThicknessConverter}">
+                    <Binding ElementName="lineForBrushAndThickness_VerticalGridlinesPen" Path="Stroke" Mode="OneWay"/>
+                    <Binding ElementName="lineForBrushAndThickness_VerticalGridlinesPen" Path="StrokeThickness" Mode="OneWay"/>
+                </MultiBinding>
+            </fancy_candles:CandleChart.VerticalGridlinesPen>
+
+        </fancy_candles:CandleChart>
+
+        <!-- Wait indicator -->
+        <fancy_wait_indicators:CircleWaitIndicator Grid.Column="0" Grid.Row="0" IsRunning="{Binding Path=IsCandlesLoading}" Height="30" Width="30"/>
+        <!-- ============================================================================================================================================================== -->
+
+        <ScrollViewer Grid.Row="1" Background="AntiqueWhite">
+            <StackPanel Orientation="Vertical" Margin="10 10 10 10">
+
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="TimeFrame: "/>
+                    <TextBlock Text="{Binding ElementName=myCandleChart, Path=TimeFrame}" FontWeight="ExtraBold"/>
+                    <TextBlock Text=" minutes (Automatically determined timeframe)."/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <ComboBox x:Name="timeTickFontSize" IsEditable="True" SelectedValuePath="Content" SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultTimeTickFontSize, Mode=OneWay}">
+                        <ComboBoxItem Content="7"/>
+                        <ComboBoxItem Content="8"/>
+                        <ComboBoxItem Content="9"/>
+                        <ComboBoxItem Content="10"/>
+                        <ComboBoxItem Content="11"/>
+                        <ComboBoxItem Content="12"/>
+                        <ComboBoxItem Content="13"/>
+                        <ComboBoxItem Content="14"/>
+                        <ComboBoxItem Content="15"/>
+                        <ComboBoxItem Content="16"/>
+                        <ComboBoxItem Content="17"/>
+                        <ComboBoxItem Content="18"/>
+                    </ComboBox>
+                    <TextBlock Margin="6 0 0 0" VerticalAlignment="Center">TimeTickFontSize</TextBlock>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <ComboBox x:Name="priceTickFontSize" IsEditable="True" SelectedValuePath="Content" SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultPriceTickFontSize, Mode=OneWay}">
+                        <ComboBoxItem Content="7"/>
+                        <ComboBoxItem Content="8"/>
+                        <ComboBoxItem Content="9"/>
+                        <ComboBoxItem Content="10"/>
+                        <ComboBoxItem Content="11"/>
+                        <ComboBoxItem Content="12"/>
+                        <ComboBoxItem Content="13"/>
+                        <ComboBoxItem Content="14"/>
+                        <ComboBoxItem Content="15"/>
+                        <ComboBoxItem Content="16"/>
+                        <ComboBoxItem Content="17"/>
+                        <ComboBoxItem Content="18"/>
+                    </ComboBox>
+                    <TextBlock Margin="6 0 0 0" VerticalAlignment="Center">PriceTickFontSize</TextBlock>
+                </StackPanel>
+
+                <GroupBox Header="CandlesSource binded to history data:" HorizontalAlignment="Left" Margin="0 5 0 0">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="From embedded resource text file:" Margin="0 5 5 0"/>
+                            <ListBox x:Name="selectCandlesFromFile" SelectionChanged="SetCandlesFromEmbeddedResourceTextFile" SelectionMode="Single" SelectedIndex="0" Margin="0 0 0 0" HorizontalAlignment="Stretch">
+                                <ListBoxItem>stock_A_m5.txt</ListBoxItem>
+                                <ListBoxItem>stock_B_m5.txt</ListBoxItem>
+                            </ListBox>
+                        </StackPanel>
+
+                        <TextBlock Text="or" Margin="20 0 20 0" VerticalAlignment="Center"/>
+
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="From outer REST API:" Margin="0 5 5 0"/>
+                            <ListBox x:Name="selectCandlesFromWeb" SelectionChanged="SetCandlesFromWeb" SelectionMode="Single" SelectedIndex="-1" Margin="0 0 0 0" HorizontalAlignment="Stretch">
+                                <ListBoxItem>btcusd</ListBoxItem>
+                                <ListBoxItem>ethusd</ListBoxItem>
+                            </ListBox>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <local:Hex8DigitTextBox x:Name="chartAreaBackground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultChartAreaBackground, Mode=OneWay}"/>
+                    <TextBlock Text="ChartAreaBackground (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                </StackPanel>
+
+                <!-- Disabling -->
+                <Expander Header="Disabling" Margin=" 0 10 0 0">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+                        <CheckBox x:Name="isEnabled" IsChecked="True"  Content="IsEnabled" Margin="0 5 0 0"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="disabledFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultDisabledFill, Mode=OneWay}" 
+                                                    IsEnabled="{Binding ElementName=isEnabled, Path=IsChecked, Converter={StaticResource notBoolConverter}, Mode=OneWay}"/>
+                            <TextBlock Text="DisabledFill (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <!-- Setting the visible candles range via special methods -->
+                <Expander Header="Setting the range of visible candles via special methods">
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox Header="void CenterOnDateTime(DateTime datetimeToCenter)" HorizontalAlignment="Left" Margin="0 5 0 0" >
+                            <StackPanel Orientation="Horizontal" Style="{StaticResource ExpanderContent}">
+                                <Calendar x:Name="centralDate" FirstDayOfWeek="Monday" IsTodayHighlighted="False" SelectedDate="8/01/2019"/>
+                                <ComboBox x:Name="centralHour" SelectedValuePath="Content" SelectedIndex="10" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
+                                <ComboBox x:Name="centralMinute" SelectedValuePath="Content" SelectedIndex="0" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
+                                <Button Content="Go" Click="SetCentralDateTime"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="void SetVisibleCandlesRange(DateTime t0, DateTime t1)" HorizontalAlignment="Left" Margin="0 5 0 0" >
+                            <StackPanel Orientation="Horizontal" Style="{StaticResource ExpanderContent}">
+                                <Calendar x:Name="date0" FirstDayOfWeek="Monday" IsTodayHighlighted="False" SelectedDate="8/01/2019"/>
+                                <ComboBox x:Name="hour0" SelectedValuePath="Content" SelectedIndex="10" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
+                                <ComboBox x:Name="minute0" SelectedValuePath="Content" SelectedIndex="0" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
+                                <Calendar x:Name="date1" FirstDayOfWeek="Monday" IsTodayHighlighted="False" SelectedDate="8/01/2019"/>
+                                <ComboBox x:Name="hour1" SelectedValuePath="Content" SelectedIndex="10" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
+                                <ComboBox x:Name="minute1" SelectedValuePath="Content" SelectedIndex="0" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
+                                <Button Content="Go" Click="SetVisibleCandlesRange"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Expander>
+
+                <!-- Price Chart -->
+                <Expander Header="Price Chart">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+
+                        <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
+                            <local:DoubleTextBox x:Name="priceChartTopMargin" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultPriceChartTopMargin, Mode=OneWay}" Width="150" />
+                            <TextBlock Text="PriceChartTopMargin" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:DoubleTextBox x:Name="priceChartBottomMargin" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultPriceChartBottomMargin, Mode=OneWay}" Width="150"/>
+                            <TextBlock Text="PriceChartBottomMargin" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="bullishCandleBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishCandleBrush, Mode=OneWay}"/>
+                            <TextBlock Text="BullishCandleBrush (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="bearishCandleBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishCandleBrush, Mode=OneWay}"/>
+                            <TextBlock Text="BearishCandleBrush (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Volume Histogram -->
+                <Expander Header="Volume Histogram">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+
+                        <CheckBox x:Name="isVolumePanelVisible" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsVolumePanelVisible, Mode=OneWay}" Content="IsVolumePanelVisible"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:DoubleTextBox x:Name="volumeHistogramTopMargin" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}" Width="150"
+                                                 Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVolumeHistogramTopMargin, Mode=OneWay}" />
+                            <TextBlock Text="VolumeHistogramTopMargin" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:DoubleTextBox x:Name="volumeHistogramBottomMargin" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}" Width="150"
+                                                 Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVolumeHistogramBottomMargin, Mode=OneWay}" />
+                            <TextBlock Text="VolumeHistogramBottomMargin" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:DoubleTextBox x:Name="volumeBarWidthToCandleWidthRatio" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}" Width="150"
+                                                 Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVolumeBarWidthToCandleWidthRatio, Mode=OneWay}" 
+                                                 MinValue="0.0" MaxValue="1.0"/>
+                            <TextBlock Text="VolumeBarWidthToCandleWidthRatio" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="bullishVolumeBarBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishVolumeBarBrush, Mode=OneWay}"/>
+                            <TextBlock Text="BullishVolumeBarBrush (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="bearishVolumeBarBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishVolumeBarBrush, Mode=OneWay}"/>
+                            <TextBlock Text="BearishVolumeBarBrush (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Legend -->
+                <Expander Header="Legend">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <TextBox Text="{Binding Path=Ticker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                            <TextBlock Text="LegendText" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:NumbersAndSpacesTextBox x:Name="legendMargin" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendMargin, Mode=OneWay}" Width="150"/>
+                            <TextBlock Text="LegendMargin (LEFT TOP RIGHT BOTTOM)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <ComboBox x:Name="legendFontSize" IsEditable="True" SelectedValuePath="Content" SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendFontSize, Mode=OneWay}">
+                                <ComboBoxItem Content="10"/>
+                                <ComboBoxItem Content="12"/>
+                                <ComboBoxItem Content="14"/>
+                                <ComboBoxItem Content="16"/>
+                                <ComboBoxItem Content="18"/>
+                                <ComboBoxItem Content="20"/>
+                                <ComboBoxItem Content="22"/>
+                                <ComboBoxItem Content="24"/>
+                                <ComboBoxItem Content="26"/>
+                                <ComboBoxItem Content="28"/>
+                                <ComboBoxItem Content="30"/>
+                                <ComboBoxItem Content="32"/>
+                            </ComboBox>
+                            <TextBlock Margin="6 0 0 0" VerticalAlignment="Center">LegendFontSize</TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <ComboBox x:Name="legendHorizontalAlignment" IsEditable="False" 
+                                      SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendHorizontalAlignment, Mode=OneWay}"
+                                      ItemsSource="{Binding Source={StaticResource allHorizontalAlignmentValues}}"/>
+                            <TextBlock Margin="6 0 0 0" VerticalAlignment="Center" Text="LegendHorizontalAlignment"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <ComboBox x:Name="legendFontWeight" SelectedIndex="2">
+                                <FontWeight>Light</FontWeight>
+                                <FontWeight>Normal</FontWeight>
+                                <FontWeight>Bold</FontWeight>
+                                <FontWeight>ExtraBold</FontWeight>
+                            </ComboBox>
+                            <TextBlock Margin="6 0 0 0" VerticalAlignment="Center" Text="LegendFontWeight"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="legendForeground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendForeground, Mode=OneWay}"/>
+                            <TextBlock Text="LegendForeground (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <ComboBox x:Name="legendVerticalAlignment" IsEditable="False" 
+                                      SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendVerticalAlignment, Mode=OneWay}"
+                                      ItemsSource="{Binding Source={StaticResource allVerticalAlignmentValues}}"/>
+                            <TextBlock Margin="6 0 0 0" VerticalAlignment="Center" Text="LegendVerticalAlignment"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Gridlines -->
+                <Expander Header="Gridlines">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+
+                        <CheckBox x:Name="isHorizontalGridlinesEnabled" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsHorizontalGridlinesEnabled, Mode=OneWay}" Content="IsHorizontalGridlinesEnabled" Margin="0 5 0 0"/>
+                        <CheckBox x:Name="isVerticalGridlinesEnabled" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsVerticalGridlinesEnabled, Mode=OneWay}" Content="IsVerticalGridlinesEnabled" Margin="0 5 0 0"/>
+                        <CheckBox x:Name="hideMinorVerticalGridlines" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultHideMinorVerticalGridlines, Mode=OneWay}" Content="HideMinorVerticalGridlines" Margin="0 5 0 0"/>
+
+                        <GroupBox Header="HorizontalGridlinesPen" HorizontalAlignment="Left" Margin="0 5 0 0" >
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <local:Hex8DigitTextBox x:Name="brushString_HorizontalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultHorizontalGridlinesBrush, Mode=OneWay}"/>
+                                    <TextBlock Text="Color (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <local:DoubleTextBox x:Name="thicknessString_HorizontalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultHorizontalGridlinesThickness, Mode=OneWay}"/>
+                                    <TextBlock Text="Thickness" Margin="5 0 0 0"/>
+                                </StackPanel>
+
+                                <Line x:Name="lineForBrushAndThickness_HorizontalGridlinesPen" X1="0" Y1="0" X2="0" Y2="0" Visibility="Collapsed"
+                                    StrokeThickness="{Binding ElementName=thicknessString_HorizontalGridlinesPen, Path=Text, Mode=OneWay}"  
+                                    Stroke="{Binding ElementName=brushString_HorizontalGridlinesPen, Path=Text}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="VerticalGridlinesPen" HorizontalAlignment="Left" Margin="0 5 0 0">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <local:Hex8DigitTextBox x:Name="brushString_VerticalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVerticalGridlinesBrush, Mode=OneWay}"/>
+                                    <TextBlock Text="Color (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <local:DoubleTextBox x:Name="thicknessString_VerticalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVerticalGridlinesThickness, Mode=OneWay}"/>
+                                    <TextBlock Text="Thickness" Margin="5 0 0 0"/>
+                                </StackPanel>
+
+                                <Line x:Name="lineForBrushAndThickness_VerticalGridlinesPen" X1="0" Y1="0" X2="0" Y2="0" Visibility="Collapsed"
+                                    StrokeThickness="{Binding ElementName=thicknessString_VerticalGridlinesPen, Path=Text, Mode=OneWay}"  
+                                    Stroke="{Binding ElementName=brushString_VerticalGridlinesPen, Path=Text}" />
+                            </StackPanel>
+                        </GroupBox>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Cross -->
+                <Expander Header="Cross">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+
+                        <GroupBox Header="Cross Lines" HorizontalAlignment="Left" Margin="0 5 0 0">
+                            <StackPanel Orientation="Vertical">
+                                <CheckBox x:Name="isCrossLinesVisible" Content="IsCrossLinesVisible" Margin="0 5 0 0"
+                                          IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsCrossLinesVisible, Mode=OneWay}" />
+
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <local:Hex8DigitTextBox x:Name="crossLinesBrush" 
+                                                    Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultCrossLinesBrush, Mode=OneWay}" 
+                                                    IsEnabled="{Binding ElementName=isCrossLinesVisible, Path=IsChecked}"/>
+                                    <TextBlock Text="CrossLinesBrush (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Cross Price" HorizontalAlignment="Left" Margin="0 5 0 0">
+                            <StackPanel Orientation="Vertical">
+                                <CheckBox x:Name="isCrossPriceVisible" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsCrossPriceVisible, Mode=OneWay}" Content="IsCrossPriceVisible"/>
+
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <local:Hex8DigitTextBox x:Name="crossPriceForeground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultCrossPriceForeground, Mode=OneWay}" IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
+                                    <TextBlock Text="CrossPriceForeground (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                                    <local:Hex8DigitTextBox x:Name="crossPriceBackground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultCrossPriceBackground, Mode=OneWay}" IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
+                                    <TextBlock Text="CrossPriceBackground (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Expander>
+
+                <!-- Horizontal ScrollBar -->
+                <Expander Header="Horizontal ScrollBar">
+                    <StackPanel Orientation="Vertical" Style="{StaticResource ExpanderContent}">
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:Hex8DigitTextBox x:Name="scrollBarBackground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultScrollBarBackground, Mode=OneWay}" IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
+                            <TextBlock Text="ScrollBarBackground (#AARRGGBB - Hex 8-digit ARGB format)" Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                            <local:DoubleTextBox x:Name="scrollBarHeight" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultScrollBarHeight, Mode=OneWay}"/>
+                            <TextBlock Text="ScrollBarHeight" Margin="5 0 0 0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</Window>
