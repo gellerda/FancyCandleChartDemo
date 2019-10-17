@@ -117,5 +117,9 @@
   <ItemGroup>
     <EmbeddedResource Include="stock_B_m5.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="FancyCandles.dll" />
+    <Content Include="FancyWaitIndicators.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
