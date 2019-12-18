@@ -19,6 +19,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace FancyCandleChartDemo
 {
@@ -31,6 +32,17 @@ namespace FancyCandleChartDemo
         public MainWindow()
         {
             InitializeComponent();
+        }
+        //-----------------------------------------------------------------------------------------------------------------
+        public void OnEverythingLoaded(object sender, RoutedEventArgs e)
+        {
+            IntroWindow popup = new IntroWindow();
+            popup.ShowDialog();
+        }
+        //-----------------------------------------------------------------------------------------------------------------
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Uri.ToString());
         }
         //-----------------------------------------------------------------------------------------------------------------
         void SetCandlesFromEmbeddedResourceTextFile(object sender, SelectionChangedEventArgs args)
@@ -53,18 +65,37 @@ namespace FancyCandleChartDemo
             dataContextVM.SetCandlesFromWeb(senderListBoxItem.Content.ToString());
         }
         //-----------------------------------------------------------------------------------------------------------------
-        private void SetCentralDateTime(object sender, RoutedEventArgs e)
+        private void SetVisibleCandlesRangeByCenter(object sender, RoutedEventArgs e)
         {
-            DateTime d = centralDate.SelectedDate.Value;
-            myCandleChart.CenterOnDateTime(new DateTime(d.Year, d.Month, d.Day, (int)centralHour.SelectedItem, (int)centralMinute.SelectedItem, 0));
+            DateTime t = centralDate.SelectedDate.Value;
+            myCandleChart.SetVisibleCandlesRangeCenter(new DateTime(t.Year, t.Month, t.Day, (int)centralHour.SelectedItem, (int)centralMinute.SelectedItem, 0));
         }
         //-----------------------------------------------------------------------------------------------------------------
-        private void SetVisibleCandlesRange(object sender, RoutedEventArgs e)
+        private void SetVisibleCandlesRangeByBounds(object sender, RoutedEventArgs e)
         {
-            DateTime d0 = date0.SelectedDate.Value;
-            DateTime d1 = date1.SelectedDate.Value;
-            myCandleChart.SetVisibleCandlesRange(new DateTime(d0.Year, d0.Month, d0.Day, (int)hour0.SelectedItem, (int)minute0.SelectedItem, 0),
-                                                  new DateTime(d1.Year, d1.Month, d1.Day, (int)hour1.SelectedItem, (int)minute1.SelectedItem, 0));
+            DateTime t0 = date0.SelectedDate.Value;
+            DateTime t1 = date1.SelectedDate.Value;
+            myCandleChart.SetVisibleCandlesRangeBounds(new DateTime(t0.Year, t0.Month, t0.Day, (int)hour0.SelectedItem, (int)minute0.SelectedItem, 0),
+                                                  new DateTime(t1.Year, t1.Month, t1.Day, (int)hour1.SelectedItem, (int)minute1.SelectedItem, 0));
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+
+            if (menuItem.Header.ToString() == "View FancyCandles Documentation")
+                System.Diagnostics.Process.Start("https://gellerda.github.io/FancyCandles/articles/overview.html");
+            else if (menuItem.Header.ToString() == "FancyCandles GitHub Repo")
+                System.Diagnostics.Process.Start("https://github.com/gellerda/FancyCandles");
+            else if (menuItem.Header.ToString() == "FancyCandles NuGet Package")
+                System.Diagnostics.Process.Start("https://www.nuget.org/packages/FancyCandles/");
+            else if (menuItem.Header.ToString() == "FancyCandles Demo GitHub Repo")
+                System.Diagnostics.Process.Start("https://github.com/gellerda/FancyCandleChartDemo");
+            else if (menuItem.Header.ToString() == "About FancyCandles Demo")
+            {
+                IntroWindow popup = new IntroWindow();
+                popup.ShowDialog();
+            }
         }
         //-----------------------------------------------------------------------------------------------------------------
     }

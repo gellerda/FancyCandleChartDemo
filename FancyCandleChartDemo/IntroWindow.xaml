@@ -1,0 +1,49 @@
+﻿<Window x:Class="FancyCandleChartDemo.IntroWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FancyCandleChartDemo"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        WindowStartupLocation="CenterOwner"
+        AllowsTransparency="True" 
+        Background="Transparent"
+        BorderThickness="0"
+        Title="IntroWindow" Height="370" Width="350">
+
+    <Border CornerRadius="12" Background="WhiteSmoke" BorderThickness="2" BorderBrush="SteelBlue">
+        <Grid>
+            <StackPanel VerticalAlignment="Center">
+                <Image HorizontalAlignment="Center" Source="/fancy_candles_logo.png" Width="64" Height="64" Margin="0 20 0 20"/>
+
+                <TextBlock HorizontalAlignment="Center" Margin="15 0 15 0" TextWrapping="Wrap" TextAlignment="Center">
+                Welcome to the demo app of the FancyCandles's candlestick chart control!
+                </TextBlock>
+
+                <TextBlock HorizontalAlignment="Center" Margin="15 5 15 0" TextWrapping="Wrap" TextAlignment="Center">
+                You can use this app as a simplistic interactive documentation for the CandleChart control for WPF.
+                </TextBlock>
+
+                <TextBlock HorizontalAlignment="Center" Margin="0 10 0 0" TextWrapping="Wrap" TextAlignment="Center">
+                    <Hyperlink NavigateUri="https://github.com/gellerda/FancyCandles" RequestNavigate="Hyperlink_RequestNavigate">FancyCandles project</Hyperlink>
+                </TextBlock>
+
+                <TextBlock HorizontalAlignment="Center" Margin="0 5 0 0" TextWrapping="Wrap" TextAlignment="Center">
+                    <Hyperlink NavigateUri="https://www.nuget.org/packages/FancyCandles/" RequestNavigate="Hyperlink_RequestNavigate">FancyCandles NuGet package</Hyperlink>
+                </TextBlock>
+                
+                <TextBlock HorizontalAlignment="Center" Margin="0 5 0 0" TextWrapping="Wrap" TextAlignment="Center">
+                    <Hyperlink NavigateUri="https://github.com/gellerda/FancyCandleChartDemo" RequestNavigate="Hyperlink_RequestNavigate">This demo app project</Hyperlink>
+                </TextBlock>
+
+                <Button Margin="10 20 10 0" HorizontalAlignment="Center" IsCancel="True" IsDefault="True" Padding="15 3">Ok</Button>
+            </StackPanel>
+
+            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 5" Foreground="Gray">
+                Copyright Ⓒ <Hyperlink Foreground="Gray" NavigateUri="mailto://dennisgeller@gmail.com" RequestNavigate="Hyperlink_RequestNavigate">Dennis Geller</Hyperlink> 2019.
+            </TextBlock>
+        </Grid>
+    </Border>
+
+</Window>
