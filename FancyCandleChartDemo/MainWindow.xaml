@@ -194,7 +194,7 @@
                                    LegendFontWeight="{Binding ElementName=legendFontWeight, Path=Text}"
                                    LegendHorizontalAlignment="{Binding ElementName=legendHorizontalAlignment, Path=Text}"
                                    LegendVerticalAlignment="{Binding ElementName=legendVerticalAlignment, Path=Text}"
-                                   InitialCandleWidth="7" InitialGapBetweenCandles="1" 
+                                   InitialCandleWidth="7" InitialCandleGap="1" 
                                    TimeTickFontSize="{Binding ElementName=timeTickFontSize, Path=Text}" 
                                    PriceTickFontSize="{Binding ElementName=priceTickFontSize, Path=Text}" 
                                    GapBetweenPriceTickLabels="10"
@@ -211,10 +211,12 @@
                                    ScrollBarBackground="{Binding ElementName=scrollBarBackground, Path=Text}"
                                    ScrollBarHeight="{Binding ElementName=scrollBarHeight, Path=Text}" 
                                    DisabledFill="{Binding ElementName=disabledFill, Path=Text}"
-                                   BullishCandleBrush="{Binding ElementName=bullishCandleBrush, Path=Text}"
-                                   BearishCandleBrush="{Binding ElementName=bearishCandleBrush, Path=Text}"
-                                   BullishVolumeBarBrush="{Binding ElementName=bullishVolumeBarBrush, Path=Text}"
-                                   BearishVolumeBarBrush="{Binding ElementName=bearishVolumeBarBrush, Path=Text}" >
+                                   BullishCandleFill="{Binding ElementName=bullishCandleFill, Path=Text}"
+                                   BearishCandleFill="{Binding ElementName=bearishCandleFill, Path=Text}"
+                                   BullishCandleStroke="{Binding ElementName=bullishCandleStroke, Path=Text}"
+                                   BearishCandleStroke="{Binding ElementName=bearishCandleStroke, Path=Text}"
+                                   BullishVolumeBarFill="{Binding ElementName=bullishVolumeBarFill, Path=Text}"
+                                   BearishVolumeBarFill="{Binding ElementName=bearishVolumeBarFill, Path=Text}" >
 
             <fancy_candles:CandleChart.IsEnabled>
                 <MultiBinding Converter="{StaticResource bool_and_notBoolConverter}">
@@ -513,29 +515,57 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleBrush" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleBrush</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bullishCandleBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishCandleBrush, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleFill" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleFill</Hyperlink> =&#160;</TextBlock>
+                            <local:Hex8DigitTextBox x:Name="bullishCandleFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishCandleFill, Mode=OneWay}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
-                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BullishCandleBrush { get; set; }</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BullishCandleFill { get; set; }</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
-                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BullishCandleBrush=&quot;<Run Text="{Binding Source={x:Reference bullishCandleBrush} , Path=Text}"/>&quot;/&gt;</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BullishCandleFill=&quot;<Run Text="{Binding Source={x:Reference bullishCandleFill} , Path=Text}"/>&quot;/&gt;</TextBlock>
                                 </StackPanel>
                             </StackPanel.ToolTip>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleBrush" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleBrush</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bearishCandleBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishCandleBrush, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleStroke" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleStroke</Hyperlink> =&#160;</TextBlock>
+                            <local:Hex8DigitTextBox x:Name="bullishCandleStroke" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishCandleStroke, Mode=OneWay}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
-                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BearishCandleBrush { get; set; }</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BullishCandleStroke { get; set; }</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
-                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BearishCandleBrush=&quot;<Run Text="{Binding Source={x:Reference bearishCandleBrush} , Path=Text}"/>&quot;/&gt;</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BullishCandleStroke=&quot;<Run Text="{Binding Source={x:Reference bullishCandleStroke} , Path=Text}"/>&quot;/&gt;</TextBlock>
+                                </StackPanel>
+                            </StackPanel.ToolTip>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleFill" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleFill</Hyperlink> =&#160;</TextBlock>
+                            <local:Hex8DigitTextBox x:Name="bearishCandleFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishCandleFill, Mode=OneWay}"/>
+                            <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
+
+                            <StackPanel.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BearishCandleFill { get; set; }</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BearishCandleFill=&quot;<Run Text="{Binding Source={x:Reference bearishCandleFill} , Path=Text}"/>&quot;/&gt;</TextBlock>
+                                </StackPanel>
+                            </StackPanel.ToolTip>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleStroke" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleStroke</Hyperlink> =&#160;</TextBlock>
+                            <local:Hex8DigitTextBox x:Name="bearishCandleStroke" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishCandleStroke, Mode=OneWay}"/>
+                            <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
+
+                            <StackPanel.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BearishCandleStroke { get; set; }</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BearishCandleStroke=&quot;<Run Text="{Binding Source={x:Reference bearishCandleStroke} , Path=Text}"/>&quot;/&gt;</TextBlock>
                                 </StackPanel>
                             </StackPanel.ToolTip>
                         </StackPanel>
@@ -604,29 +634,29 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishVolumeBarBrush" RequestNavigate="Hyperlink_RequestNavigate">BullishVolumeBarBrush</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bullishVolumeBarBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishVolumeBarBrush, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishVolumeBarFill" RequestNavigate="Hyperlink_RequestNavigate">BullishVolumeBarFill</Hyperlink> =&#160;</TextBlock>
+                            <local:Hex8DigitTextBox x:Name="bullishVolumeBarFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishVolumeBarFill, Mode=OneWay}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
-                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BullishVolumeBarBrush { get; set; }</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Brush BullishVolumeBarFill { get; set; }</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
-                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BullishVolumeBarBrush=&quot;<Run Text="{Binding Source={x:Reference bullishVolumeBarBrush} , Path=Text}"/>&quot;/&gt;</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BullishVolumeBarFill=&quot;<Run Text="{Binding Source={x:Reference bullishVolumeBarFill} , Path=Text}"/>&quot;/&gt;</TextBlock>
                                 </StackPanel>
                             </StackPanel.ToolTip>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishVolumeBarBrush" RequestNavigate="Hyperlink_RequestNavigate">BearishVolumeBarBrush</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bearishVolumeBarBrush" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishVolumeBarBrush, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishVolumeBarFill" RequestNavigate="Hyperlink_RequestNavigate">BearishVolumeBarFill</Hyperlink> =&#160;</TextBlock>
+                            <local:Hex8DigitTextBox x:Name="bearishVolumeBarFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishVolumeBarFill, Mode=OneWay}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
-                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public double BearishVolumeBarBrush { get; set; }</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTTitle}">public double BearishVolumeBarFill { get; set; }</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
-                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BearishVolumeBarBrush=&quot;<Run Text="{Binding Source={x:Reference bearishVolumeBarBrush} , Path=Text}"/>&quot;/&gt;</TextBlock>
+                                    <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart BearishVolumeBarFill=&quot;<Run Text="{Binding Source={x:Reference bearishVolumeBarFill} , Path=Text}"/>&quot;/&gt;</TextBlock>
                                 </StackPanel>
                             </StackPanel.ToolTip>
                         </StackPanel>
