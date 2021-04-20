@@ -53,22 +53,6 @@ namespace FancyCandleChartDemo
 
     }
     //*******************************************************************************************************************************************************************
-    class PenFromBrushAndThicknessConverter : IMultiValueConverter
-    {
-        // values[0] - Brush brush
-        // values[1] - double thickness
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            Brush brush = (Brush)values[0];
-            double thickness = (double)values[1];
-            return new Pen(brush, thickness);
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        { throw new NotImplementedException(); }
-
-    }
-    //*******************************************************************************************************************************************************************
     //*******************************************************************************************************************************************************************
     //*******************************************************************************************************************************************************************
 }

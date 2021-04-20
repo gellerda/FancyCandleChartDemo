@@ -23,14 +23,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FancyCandleChartDemo"
-        xmlns:fancy_candles="clr-namespace:FancyCandles;assembly=FancyCandles"        
-        xmlns:fancy_wait_indicators="clr-namespace:FancyWaitIndicators;assembly=FancyWaitIndicators"
+        xmlns:fp="clr-namespace:FancyPrimitives;assembly=FancyPrimitives"        
+        xmlns:fc="clr-namespace:FancyCandles;assembly=FancyCandles"        
+        xmlns:fci="clr-namespace:FancyCandles.Indicators;assembly=FancyCandles"        
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="FancyCandles Demo" Height="850" Width="800">
 
     <Window.Resources>
-        <Style TargetType="local:DoubleTextBox">
+        <Style TargetType="fp:DoubleTextBox">
             <Setter Property="Width" Value="30"/>
         </Style>
 
@@ -69,7 +70,6 @@
             <Setter Property="FrameworkElement.Margin" Value="5 5 0 0"/>
         </Style>
 
-
         <Style x:Key="WithHelpTT">
             <Setter Property="FrameworkElement.HorizontalAlignment" Value="Left"/>
             <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
@@ -80,8 +80,6 @@
             <Setter Property="Control.BorderBrush" Value="Gray"/>
             <Setter Property="Control.BorderThickness" Value="1"/>
         </Style>
-        
-        
         
         <Style x:Key="textblockGroupBoxCodeExample" TargetType="TextBlock">
             <Setter Property="Foreground" Value="DarkGreen"/>
@@ -115,13 +113,6 @@
         <ObjectDataProvider x:Key="hoursProvider" ObjectType="{x:Type local:DateAndTimeDataProvider}" MethodName="GetHours"/>
         <ObjectDataProvider x:Key="minutesProvider" ObjectType="{x:Type local:DateAndTimeDataProvider}" MethodName="GetMinutes"/>
 
-        <local:PenFromBrushAndThicknessConverter x:Key="penFromBrushAndThicknessConverter"/>
-        <local:BoolAndNotBoolConverter x:Key="bool_and_notBoolConverter"/>
-        <local:NotBoolConverter x:Key="notBoolConverter"/>
-
-        <fancy_candles:CandleChart x:Key="dummyCandleChartInstance"/>
-        <!-- Only for the trick to bind to the static properties. -->
-
         <DataTemplate x:Key="expanderHeader">
             <TextBlock Text="{Binding}" FontStyle="Italic" TextDecorations="Underline"/>
         </DataTemplate>
@@ -147,13 +138,17 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
+        <local:BoolAndNotBoolConverter x:Key="bool_and_notBoolConverter"/>
+        <local:NotBoolConverter x:Key="notBoolConverter"/>
+        <fp:SymStringToNumberConverter x:Key="symStringToNumberConverter"/>
+        <fp:SymColorBrushStringConverter x:Key="symColorBrushStringConverter"/>
+        <fp:SymStringThicknessConverter x:Key="symStringThicknessConverter"/>
     </Window.Resources>
 
     <Window.DataContext>
         <local:VM x:Name="dataContextVM"/>
     </Window.DataContext>
-
-
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -179,70 +174,42 @@
             </MenuItem>
         </Menu>
         <!-- ============================================================================================================================================================== -->
+        
+        <fc:CandleChart x:Name="myCandleChart" 
+                        Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
+                        AddInIndicatorsFolder="ggg\"
+                        LegendText="{Binding Path=Ticker}"
+                        InitialCandleWidth="7" InitialCandleGap="1" 
+                        GapBetweenPriceTickLabels="10"
+                        CandlesSource="{Binding Path=Candles}">
 
-        <fancy_candles:CandleChart Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" x:Name="myCandleChart" 
-                                   PriceChartTopMargin="{Binding ElementName=priceChartTopMargin, Path=Text}"
-                                   PriceChartBottomMargin="{Binding ElementName=priceChartBottomMargin, Path=Text}"
-                                   VolumeHistogramTopMargin="{Binding ElementName=volumeHistogramTopMargin, Path=Text}"
-                                   VolumeHistogramBottomMargin="{Binding ElementName=volumeHistogramBottomMargin, Path=Text}"
-                                   VolumeBarWidthToCandleWidthRatio="{Binding ElementName=volumeBarWidthToCandleWidthRatio, Path=Text}"
-                                   ChartAreaBackground="{Binding ElementName=chartAreaBackground, Path=Text}"
-                                   LegendText="{Binding Path=Ticker}"
-                                   LegendMargin="{Binding ElementName=legendMargin, Path=Text}"
-                                   LegendForeground="{Binding ElementName=legendForeground, Path=Text}"
-                                   LegendFontSize="{Binding ElementName=legendFontSize, Path=Text}"
-                                   LegendFontWeight="{Binding ElementName=legendFontWeight, Path=Text}"
-                                   LegendHorizontalAlignment="{Binding ElementName=legendHorizontalAlignment, Path=Text}"
-                                   LegendVerticalAlignment="{Binding ElementName=legendVerticalAlignment, Path=Text}"
-                                   InitialCandleWidth="7" InitialCandleGap="1" 
-                                   TimeTickFontSize="{Binding ElementName=timeTickFontSize, Path=Text}" 
-                                   PriceTickFontSize="{Binding ElementName=priceTickFontSize, Path=Text}" 
-                                   GapBetweenPriceTickLabels="10"
-                                   CandlesSource="{Binding Path=Candles}" 
-                                   HideMinorVerticalGridlines="{Binding ElementName=hideMinorVerticalGridlines, Path=IsChecked}" 
-                                   IsVolumePanelVisible="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
-                                   IsHorizontalGridlinesEnabled="{Binding ElementName=isHorizontalGridlinesEnabled, Path=IsChecked}" 
-                                   IsVerticalGridlinesEnabled="{Binding ElementName=isVerticalGridlinesEnabled, Path=IsChecked}"
-                                   IsCrossLinesVisible="{Binding ElementName=isCrossLinesVisible, Path=IsChecked}"
-                                   CrossLinesBrush="{Binding ElementName=crossLinesBrush, Path=Text}"
-                                   IsCrossPriceVisible="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"
-                                   CrossPriceBackground="{Binding ElementName=crossPriceBackground, Path=Text}"
-                                   CrossPriceForeground="{Binding ElementName=crossPriceForeground, Path=Text}"
-                                   ScrollBarBackground="{Binding ElementName=scrollBarBackground, Path=Text}"
-                                   ScrollBarHeight="{Binding ElementName=scrollBarHeight, Path=Text}" 
-                                   DisabledFill="{Binding ElementName=disabledFill, Path=Text}"
-                                   BullishCandleFill="{Binding ElementName=bullishCandleFill, Path=Text}"
-                                   BearishCandleFill="{Binding ElementName=bearishCandleFill, Path=Text}"
-                                   BullishCandleStroke="{Binding ElementName=bullishCandleStroke, Path=Text}"
-                                   BearishCandleStroke="{Binding ElementName=bearishCandleStroke, Path=Text}"
-                                   BullishVolumeBarFill="{Binding ElementName=bullishVolumeBarFill, Path=Text}"
-                                   BearishVolumeBarFill="{Binding ElementName=bearishVolumeBarFill, Path=Text}" >
-
-            <fancy_candles:CandleChart.IsEnabled>
+            <fc:CandleChart.IsEnabled>
                 <MultiBinding Converter="{StaticResource bool_and_notBoolConverter}">
                     <Binding ElementName="isEnabled" Path="IsChecked"/>
                     <Binding Path="IsCandlesLoading"/>
                 </MultiBinding>
-            </fancy_candles:CandleChart.IsEnabled>
+            </fc:CandleChart.IsEnabled>
 
-            <fancy_candles:CandleChart.HorizontalGridlinesPen>
-                <MultiBinding Converter="{StaticResource penFromBrushAndThicknessConverter}">
-                    <Binding ElementName="lineForBrushAndThickness_HorizontalGridlinesPen" Path="Stroke" Mode="OneWay"/>
-                    <Binding ElementName="lineForBrushAndThickness_HorizontalGridlinesPen" Path="StrokeThickness" Mode="OneWay"/>
-                </MultiBinding>
-            </fancy_candles:CandleChart.HorizontalGridlinesPen>
+            <fc:CandleChart.OverlayIndicators>
+                <local:ObservableOverlayIndicatorCollection>
+                    <fci:SimpleMovingAverage N="7">
+                        <fci:SimpleMovingAverage.Pen>
+                            <Pen Thickness="1" Brush="Red" />
+                        </fci:SimpleMovingAverage.Pen>
+                    </fci:SimpleMovingAverage>
 
-            <fancy_candles:CandleChart.VerticalGridlinesPen>
-                <MultiBinding Converter="{StaticResource penFromBrushAndThicknessConverter}">
-                    <Binding ElementName="lineForBrushAndThickness_VerticalGridlinesPen" Path="Stroke" Mode="OneWay"/>
-                    <Binding ElementName="lineForBrushAndThickness_VerticalGridlinesPen" Path="StrokeThickness" Mode="OneWay"/>
-                </MultiBinding>
-            </fancy_candles:CandleChart.VerticalGridlinesPen>
+                    <local:ExponentialMovingAverage Smoothing="0.1">
+                        <local:ExponentialMovingAverage.Pen>
+                            <Pen Thickness="1" Brush="Blue" />
+                        </local:ExponentialMovingAverage.Pen>
+                    </local:ExponentialMovingAverage>
+                </local:ObservableOverlayIndicatorCollection>
+            </fc:CandleChart.OverlayIndicators>
 
-        </fancy_candles:CandleChart>
+        </fc:CandleChart>
 
         <!-- Wait indicator -->
-        <fancy_wait_indicators:CircleWaitIndicator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" IsRunning="{Binding Path=IsCandlesLoading}" Height="30" Width="30"/>
+        <fp:CircleWaitIndicator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" IsRunning="{Binding Path=IsCandlesLoading}" Height="30" Width="30"/>
         <!-- ============================================================================================================================================================== -->
         <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" ShowsPreview="False" Height="3" Background="Gray" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
         <!-- ============================================================================================================================================================== -->
@@ -257,6 +224,11 @@
         <ScrollViewer x:Name="mainScrollViewer" Grid.Column="1" Grid.Row="3" Background="Lavender" Loaded="OnEverythingLoaded">
             <StackPanel Orientation="Vertical" Margin="10 10 10 10">
 
+                <TextBlock Foreground="Red" FontSize="14">
+                    <Span FontWeight="Bold">NEW!!!</Span>
+                    <Span>Right-Click on the chart area to call the context menu!</Span>
+                </TextBlock>
+                
                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                     <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_TimeFrame" RequestNavigate="Hyperlink_RequestNavigate">TimeFrame</Hyperlink> =&#160;</TextBlock>
                     <TextBlock Text="{Binding ElementName=myCandleChart, Path=TimeFrame}"/>
@@ -310,8 +282,9 @@
 
                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                     <TextBlock VerticalAlignment="Center"><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_TimeTickFontSize" RequestNavigate="Hyperlink_RequestNavigate">TimeTickFontSize</Hyperlink> =&#160;</TextBlock>
-                    <ComboBox x:Name="timeTickFontSize" IsEditable="True" SelectedValuePath="Content" SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultTimeTickFontSize, Mode=OneWay}">
-                        <ComboBoxItem Content="7"/>
+                    <fp:EditableDoubleComboBox x:Name="timeTickFontSize"
+                                               MinValue="0" VerticalAlignment="Bottom"
+                                               Text="{Binding ElementName=myCandleChart, Path=TimeTickFontSize, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay}">
                         <ComboBoxItem Content="8"/>
                         <ComboBoxItem Content="9"/>
                         <ComboBoxItem Content="10"/>
@@ -323,8 +296,8 @@
                         <ComboBoxItem Content="16"/>
                         <ComboBoxItem Content="17"/>
                         <ComboBoxItem Content="18"/>
-                    </ComboBox>
-                    
+                    </fp:EditableDoubleComboBox>
+
                     <StackPanel.ToolTip>
                         <StackPanel>
                             <TextBlock Style="{StaticResource textblockHelpTTTitle}">public double TimeTickFontSize { get; set; }</TextBlock>
@@ -336,8 +309,9 @@
 
                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                     <TextBlock VerticalAlignment="Center"><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_PriceTickFontSize" RequestNavigate="Hyperlink_RequestNavigate">PriceTickFontSize</Hyperlink> =&#160;</TextBlock>
-                    <ComboBox x:Name="priceTickFontSize" IsEditable="True" SelectedValuePath="Content" SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultPriceTickFontSize, Mode=OneWay}">
-                        <ComboBoxItem Content="7"/>
+                    <fp:EditableDoubleComboBox x:Name="priceTickFontSize"
+                                               MinValue="0" VerticalAlignment="Bottom"
+                                               Text="{Binding ElementName=myCandleChart, Path=PriceTickFontSize, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay}">
                         <ComboBoxItem Content="8"/>
                         <ComboBoxItem Content="9"/>
                         <ComboBoxItem Content="10"/>
@@ -349,8 +323,7 @@
                         <ComboBoxItem Content="16"/>
                         <ComboBoxItem Content="17"/>
                         <ComboBoxItem Content="18"/>
-                    </ComboBox>
-
+                    </fp:EditableDoubleComboBox>
                     <StackPanel.ToolTip>
                         <StackPanel>
                             <TextBlock Style="{StaticResource textblockHelpTTTitle}">public double PriceTickFontSize { get; set; }</TextBlock>
@@ -361,8 +334,9 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_ChartAreaBackground" RequestNavigate="Hyperlink_RequestNavigate">ChartAreaBackground</Hyperlink> =&#160;</TextBlock>
-                    <local:Hex8DigitTextBox x:Name="chartAreaBackground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultChartAreaBackground, Mode=OneWay}"/>
+                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_ChartAreaBackground" RequestNavigate="Hyperlink_RequestNavigate">ChartAreaBackground</Hyperlink> =&#160;#</TextBlock>
+                    <fp:Hex8DigitTextBox x:Name="chartAreaBackground" Width="70"
+                                         Text="{Binding ElementName=myCandleChart, Path=ChartAreaBackground, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                     <StackPanel.ToolTip>
@@ -392,9 +366,10 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_DisabledFill" RequestNavigate="Hyperlink_RequestNavigate">DisabledFill</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="disabledFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultDisabledFill, Mode=OneWay}" 
-                                                    IsEnabled="{Binding ElementName=isEnabled, Path=IsChecked, Converter={StaticResource notBoolConverter}, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_DisabledFill" RequestNavigate="Hyperlink_RequestNavigate">DisabledFill</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="disabledFill"  Width="70"
+                                                 IsEnabled="{Binding ElementName=isEnabled, Path=IsChecked, Converter={StaticResource notBoolConverter}, Mode=OneWay}"
+                                                 Text="{Binding ElementName=myCandleChart, Path=DisabledFill, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -423,11 +398,13 @@
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
                                     <TextBlock HorizontalAlignment="Center">hours</TextBlock>
-                                    <ComboBox x:Name="centralHour" SelectedValuePath="Content" SelectedIndex="10" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
+                                    <ComboBox x:Name="centralHour" SelectedValuePath="." SelectedIndex="10" VerticalAlignment="Top" 
+                                              ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
                                     <TextBlock HorizontalAlignment="Center">minutes</TextBlock>
-                                    <ComboBox x:Name="centralMinute" SelectedValuePath="Content" SelectedIndex="0" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
+                                    <ComboBox x:Name="centralMinute" SelectedValuePath="." SelectedIndex="0" VerticalAlignment="Top" 
+                                              ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
                                 </StackPanel>
                                 <Button Content="Go" Click="SetVisibleCandlesRangeByCenter" VerticalAlignment="Center" Padding="10" Margin="10"/>
                             </StackPanel>
@@ -452,11 +429,13 @@
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
                                     <TextBlock HorizontalAlignment="Center">hours</TextBlock>
-                                    <ComboBox x:Name="hour0" SelectedValuePath="Content" SelectedIndex="10" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
+                                    <ComboBox x:Name="hour0" SelectedValuePath="." SelectedIndex="10" VerticalAlignment="Top" 
+                                              ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
                                     <TextBlock HorizontalAlignment="Center">minutes</TextBlock>
-                                    <ComboBox x:Name="minute0" SelectedValuePath="Content" SelectedIndex="0" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
+                                    <ComboBox x:Name="minute0" SelectedValuePath="." SelectedIndex="0" VerticalAlignment="Top" 
+                                              ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
                                 </StackPanel>
                                 <TextBlock>&#160;&#160;&#160;&#160;</TextBlock>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
@@ -465,11 +444,13 @@
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
                                     <TextBlock HorizontalAlignment="Center">hours</TextBlock>
-                                    <ComboBox x:Name="hour1" SelectedValuePath="Content" SelectedIndex="10" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
+                                    <ComboBox x:Name="hour1" SelectedValuePath="." SelectedIndex="10" VerticalAlignment="Top" 
+                                              ItemsSource="{Binding Source={StaticResource hoursProvider}}"/>
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource LeftTopMargin}">
                                     <TextBlock HorizontalAlignment="Center">minutes</TextBlock>
-                                    <ComboBox x:Name="minute1" SelectedValuePath="Content" SelectedIndex="0" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
+                                    <ComboBox x:Name="minute1" SelectedValuePath="." SelectedIndex="0" VerticalAlignment="Top" 
+                                              ItemsSource="{Binding Source={StaticResource minutesProvider}}"/>
                                 </StackPanel>
                                 <Button Click="SetVisibleCandlesRangeByBounds" VerticalAlignment="Center" Padding="10" Margin="10">Go!</Button>
                             </StackPanel>
@@ -490,7 +471,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_PriceChartTopMargin" RequestNavigate="Hyperlink_RequestNavigate">PriceChartTopMargin</Hyperlink> =&#160;</TextBlock>
-                            <local:DoubleTextBox x:Name="priceChartTopMargin" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultPriceChartTopMargin, Mode=OneWay}" />
+                            <fp:DoubleTextBox x:Name="priceChartTopMargin" 
+                                              Text="{Binding ElementName=myCandleChart, Path=PriceChartTopMargin, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -503,7 +485,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_PriceChartBottomMargin" RequestNavigate="Hyperlink_RequestNavigate">PriceChartBottomMargin</Hyperlink> =&#160;</TextBlock>
-                            <local:DoubleTextBox x:Name="priceChartBottomMargin" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultPriceChartBottomMargin, Mode=OneWay}"/>
+                            <fp:DoubleTextBox x:Name="priceChartBottomMargin" 
+                                              Text="{Binding ElementName=myCandleChart, Path=PriceChartBottomMargin, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -515,8 +498,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleFill" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleFill</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bullishCandleFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishCandleFill, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleFill" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleFill</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="bullishCandleFill" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=BullishCandleFill, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -529,8 +513,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleStroke" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleStroke</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bullishCandleStroke" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishCandleStroke, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishCandleStroke" RequestNavigate="Hyperlink_RequestNavigate">BullishCandleStroke</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="bullishCandleStroke" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=BullishCandleStroke, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -543,8 +528,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleFill" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleFill</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bearishCandleFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishCandleFill, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleFill" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleFill</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="bearishCandleFill" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=BearishCandleFill, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -557,8 +543,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleStroke" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleStroke</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bearishCandleStroke" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishCandleStroke, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishCandleStroke" RequestNavigate="Hyperlink_RequestNavigate">BearishCandleStroke</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="bearishCandleStroke" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=BearishCandleStroke, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -579,7 +566,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_IsVolumePanelVisible" RequestNavigate="Hyperlink_RequestNavigate">IsVolumePanelVisible</Hyperlink> =&#160;</TextBlock>
-                            <CheckBox x:Name="isVolumePanelVisible" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsVolumePanelVisible, Mode=OneWay}"/>
+                            <CheckBox x:Name="isVolumePanelVisible" 
+                                      IsChecked="{Binding ElementName=myCandleChart, Path=IsVolumePanelVisible, Mode=TwoWay}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -592,8 +580,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_VolumeHistogramTopMargin" RequestNavigate="Hyperlink_RequestNavigate">VolumeHistogramTopMargin</Hyperlink> =&#160;</TextBlock>
-                            <local:DoubleTextBox x:Name="volumeHistogramTopMargin" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
-                                                 Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVolumeHistogramTopMargin, Mode=OneWay}" />
+                            <fp:DoubleTextBox x:Name="volumeHistogramTopMargin" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
+                                              Text="{Binding ElementName=myCandleChart, Path=VolumeHistogramTopMargin, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -606,8 +594,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_VolumeHistogramBottomMargin" RequestNavigate="Hyperlink_RequestNavigate">VolumeHistogramBottomMargin</Hyperlink> =&#160;</TextBlock>
-                            <local:DoubleTextBox x:Name="volumeHistogramBottomMargin" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
-                                                 Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVolumeHistogramBottomMargin, Mode=OneWay}" />
+                            <fp:DoubleTextBox x:Name="volumeHistogramBottomMargin" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
+                                              Text="{Binding ElementName=myCandleChart, Path=VolumeHistogramBottomMargin, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -620,9 +608,9 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_VolumeBarWidthToCandleWidthRatio" RequestNavigate="Hyperlink_RequestNavigate">VolumeBarWidthToCandleWidthRatio</Hyperlink> =&#160;</TextBlock>
-                            <local:DoubleTextBox x:Name="volumeBarWidthToCandleWidthRatio" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
-                                                 Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVolumeBarWidthToCandleWidthRatio, Mode=OneWay}" 
-                                                 MinValue="0.0" MaxValue="1.0"/>
+                            <fp:DoubleTextBox x:Name="volumeBarWidthToCandleWidthRatio" IsEnabled="{Binding ElementName=isVolumePanelVisible, Path=IsChecked}"
+                                              Text="{Binding ElementName=myCandleChart, Path=VolumeBarWidthToCandleWidthRatio, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              MinValue="0.0" MaxValue="1.0"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -634,8 +622,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishVolumeBarFill" RequestNavigate="Hyperlink_RequestNavigate">BullishVolumeBarFill</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bullishVolumeBarFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBullishVolumeBarFill, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BullishVolumeBarFill" RequestNavigate="Hyperlink_RequestNavigate">BullishVolumeBarFill</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="bullishVolumeBarFill" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=BullishVolumeBarFill, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -648,8 +637,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishVolumeBarFill" RequestNavigate="Hyperlink_RequestNavigate">BearishVolumeBarFill</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="bearishVolumeBarFill" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultBearishVolumeBarFill, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_BearishVolumeBarFill" RequestNavigate="Hyperlink_RequestNavigate">BearishVolumeBarFill</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="bearishVolumeBarFill" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=BearishVolumeBarFill, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -670,7 +660,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendText" RequestNavigate="Hyperlink_RequestNavigate">LegendText</Hyperlink> =&#160;</TextBlock>
-                            <TextBox x:Name="legendText" Text="{Binding Path=Ticker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                            <TextBox x:Name="legendText" Width="150"
+                                     Text="{Binding Path=Ticker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -683,7 +674,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendMargin" RequestNavigate="Hyperlink_RequestNavigate">LegendMargin</Hyperlink> =&#160;</TextBlock>
-                            <local:NumbersAndSpacesTextBox x:Name="legendMargin" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendMargin, Mode=OneWay}" Width="110"/>
+                            <fp:NumbersAndSpacesTextBox x:Name="legendMargin" Width="110"
+                                                        Text="{Binding ElementName=myCandleChart, Path=LegendMargin, Converter={StaticResource symStringThicknessConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(LEFT TOP RIGHT BOTTOM)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -697,7 +689,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock VerticalAlignment="Center"><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendFontSize" RequestNavigate="Hyperlink_RequestNavigate">LegendFontSize</Hyperlink> =&#160;</TextBlock>
-                            <ComboBox x:Name="legendFontSize" IsEditable="True" SelectedValuePath="Content" SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendFontSize, Mode=OneWay}">
+                            <fp:EditableDoubleComboBox x:Name="legendFontSize" MinValue="0" VerticalAlignment="Bottom"
+                                                       Text="{Binding ElementName=myCandleChart, Path=LegendFontSize, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay}">
                                 <ComboBoxItem Content="10"/>
                                 <ComboBoxItem Content="12"/>
                                 <ComboBoxItem Content="14"/>
@@ -710,7 +703,8 @@
                                 <ComboBoxItem Content="28"/>
                                 <ComboBoxItem Content="30"/>
                                 <ComboBoxItem Content="32"/>
-                            </ComboBox>
+                                <ComboBoxItem Content="34"/>
+                            </fp:EditableDoubleComboBox>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -724,7 +718,7 @@
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock VerticalAlignment="Center"><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendHorizontalAlignment" RequestNavigate="Hyperlink_RequestNavigate">LegendHorizontalAlignment</Hyperlink> =&#160;</TextBlock>
                             <ComboBox x:Name="legendHorizontalAlignment" IsEditable="False" 
-                                      SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendHorizontalAlignment, Mode=OneWay}"
+                                      SelectedValue="{Binding ElementName=myCandleChart, Path=LegendHorizontalAlignment, Mode=TwoWay}"
                                       ItemsSource="{Binding Source={StaticResource allHorizontalAlignmentValues}}"/>
 
                             <StackPanel.ToolTip>
@@ -739,7 +733,7 @@
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock VerticalAlignment="Center"><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendVerticalAlignment" RequestNavigate="Hyperlink_RequestNavigate">LegendVerticalAlignment</Hyperlink> =&#160;</TextBlock>
                             <ComboBox x:Name="legendVerticalAlignment" IsEditable="False" 
-                                      SelectedValue="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendVerticalAlignment, Mode=OneWay}"
+                                      SelectedValue="{Binding ElementName=myCandleChart, Path=LegendVerticalAlignment, Mode=TwoWay}"
                                       ItemsSource="{Binding Source={StaticResource allVerticalAlignmentValues}}"/>
 
                             <StackPanel.ToolTip>
@@ -753,7 +747,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock VerticalAlignment="Center"><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendFontWeight" RequestNavigate="Hyperlink_RequestNavigate">LegendFontWeight</Hyperlink> =&#160;</TextBlock>
-                            <ComboBox x:Name="legendFontWeight" SelectedIndex="2">
+                            <ComboBox x:Name="legendFontWeight"
+                                      SelectedValue="{Binding ElementName=myCandleChart, Path=LegendFontWeight, Mode=TwoWay}">
                                 <FontWeight>Light</FontWeight>
                                 <FontWeight>Normal</FontWeight>
                                 <FontWeight>Bold</FontWeight>
@@ -770,8 +765,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendForeground" RequestNavigate="Hyperlink_RequestNavigate">LegendForeground</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="legendForeground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultLegendForeground, Mode=OneWay}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_LegendForeground" RequestNavigate="Hyperlink_RequestNavigate">LegendForeground</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="legendForeground" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=LegendForeground, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -792,7 +788,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_IsHorizontalGridlinesEnabled" RequestNavigate="Hyperlink_RequestNavigate">IsHorizontalGridlinesEnabled</Hyperlink> =&#160;</TextBlock>
-                            <CheckBox x:Name="isHorizontalGridlinesEnabled" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsHorizontalGridlinesEnabled, Mode=OneWay}"/>
+                            <CheckBox x:Name="isHorizontalGridlinesEnabled" 
+                                      IsChecked="{Binding ElementName=myCandleChart, Path=IsHorizontalGridlinesEnabled, Mode=TwoWay}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -805,7 +802,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_IsVerticalGridlinesEnabled" RequestNavigate="Hyperlink_RequestNavigate">IsVerticalGridlinesEnabled</Hyperlink> =&#160;</TextBlock>
-                            <CheckBox x:Name="isVerticalGridlinesEnabled" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsVerticalGridlinesEnabled, Mode=OneWay}"/>
+                            <CheckBox x:Name="isVerticalGridlinesEnabled" 
+                                      IsChecked="{Binding ElementName=myCandleChart, Path=IsVerticalGridlinesEnabled, Mode=TwoWay}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -818,7 +816,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_HideMinorVerticalGridlines" RequestNavigate="Hyperlink_RequestNavigate">HideMinorVerticalGridlines</Hyperlink> =&#160;</TextBlock>
-                            <CheckBox x:Name="hideMinorVerticalGridlines" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultHideMinorVerticalGridlines, Mode=OneWay}"/>
+                            <CheckBox x:Name="hideMinorVerticalGridlines" 
+                                      IsChecked="{Binding ElementName=myCandleChart, Path=HideMinorVerticalGridlines, Mode=TwoWay}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>
@@ -829,83 +828,41 @@
                             </StackPanel.ToolTip>
                         </StackPanel>
 
-                        <GroupBox Style="{StaticResource WithHelpTT}">
-                            <GroupBox.Header>
-                                <Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_HorizontalGridlinesPen" RequestNavigate="Hyperlink_RequestNavigate">HorizontalGridlinesPen</Hyperlink>
-                            </GroupBox.Header>
-                            
-                            <Grid>
-                                <Rectangle Fill="Transparent"/>
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="10 5 0 0">
-                                        <TextBlock><Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.pen.brush?view=netframework-4.8" RequestNavigate="Hyperlink_RequestNavigate">.Brush</Hyperlink> =&#160;</TextBlock>
-                                        <local:Hex8DigitTextBox x:Name="brushString_HorizontalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultHorizontalGridlinesBrush, Mode=OneWay}"/>
-                                        <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
-                                    </StackPanel>
+                        <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_HorizontalGridlinesPen" RequestNavigate="Hyperlink_RequestNavigate">HorizontalGridlinesPen</Hyperlink> =&#160;</TextBlock>
+                            <fp:PenSelector x:Name="horizontalGridlinesPen" SelectedPen="{Binding ElementName=myCandleChart, Path=HorizontalGridlinesPen, Mode=TwoWay}" />
 
-                                    <StackPanel Orientation="Horizontal" Margin="10 5 0 0">
-                                        <TextBlock><Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.pen.thickness?view=netframework-4.8" RequestNavigate="Hyperlink_RequestNavigate">.Thickness</Hyperlink> =&#160;</TextBlock>
-                                        <local:DoubleTextBox x:Name="thicknessString_HorizontalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultHorizontalGridlinesThickness, Mode=OneWay}"/>
-                                    </StackPanel>
-
-                                    <Line x:Name="lineForBrushAndThickness_HorizontalGridlinesPen" X1="0" Y1="0" X2="0" Y2="0" Visibility="Collapsed"
-                                            StrokeThickness="{Binding ElementName=thicknessString_HorizontalGridlinesPen, Path=Text, Mode=OneWay}"  
-                                            Stroke="{Binding ElementName=brushString_HorizontalGridlinesPen, Path=Text}" />
-                                </StackPanel>
-                            </Grid>
-                            
-                            <GroupBox.ToolTip>
+                            <StackPanel.ToolTip>
                                 <StackPanel>
                                     <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Pen HorizontalGridlinesPen { get; set; }</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart&gt;<LineBreak/>
                                     &#160;&#160;&#160;&#160;&lt;CandleChart.HorizontalGridlinesPen&gt;<LineBreak/>
-                                    &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;Pen Thickness=&quot;<Run Text="{Binding Source={x:Reference thicknessString_HorizontalGridlinesPen}, Path=Text}"/>&quot;
-                                    Brush=&quot;<Run Text="{Binding Source={x:Reference brushString_HorizontalGridlinesPen}, Path=Text}"/>&quot;/&gt;<LineBreak/>
+                                    &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;Pen Thickness=&quot;<Run Text="{Binding Source={x:Reference horizontalGridlinesPen}, Path=SelectedPen.Thickness}"/>&quot;
+                                    Brush=&quot;<Run Text="{Binding Source={x:Reference horizontalGridlinesPen}, Path=SelectedPen.Brush}"/>&quot;/&gt;<LineBreak/>
                                     &#160;&#160;&#160;&#160;&lt;/CandleChart.HorizontalGridlinesPen&gt;<LineBreak/>
                                     &lt;/CandleChart&gt;</TextBlock>
                                 </StackPanel>
-                            </GroupBox.ToolTip>
-                        </GroupBox>
+                            </StackPanel.ToolTip>
+                        </StackPanel>
 
-                        <GroupBox Style="{StaticResource WithHelpTT}">
-                            <GroupBox.Header>
-                                <Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_VerticalGridlinesPen" RequestNavigate="Hyperlink_RequestNavigate">VerticalGridlinesPen</Hyperlink>
-                            </GroupBox.Header>
-                            
-                            <Grid>
-                                <Rectangle Fill="Transparent"/>
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal" Margin="10 5 0 0">
-                                        <TextBlock><Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.pen.brush?view=netframework-4.8" RequestNavigate="Hyperlink_RequestNavigate">.Brush</Hyperlink> =&#160;</TextBlock>
-                                        <local:Hex8DigitTextBox x:Name="brushString_VerticalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVerticalGridlinesBrush, Mode=OneWay}"/>
-                                        <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
-                                    </StackPanel>
+                        <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_VerticalGridlinesPen" RequestNavigate="Hyperlink_RequestNavigate">VerticalGridlinesPen</Hyperlink> =&#160;</TextBlock>
+                            <fp:PenSelector x:Name="verticalGridlinesPen" SelectedPen="{Binding ElementName=myCandleChart, Path=VerticalGridlinesPen, Mode=TwoWay}" />
 
-                                    <StackPanel Orientation="Horizontal" Margin="10 5 0 0">
-                                        <TextBlock><Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.pen.thickness?view=netframework-4.8" RequestNavigate="Hyperlink_RequestNavigate">.Thickness</Hyperlink> =&#160;</TextBlock>
-                                        <local:DoubleTextBox x:Name="thicknessString_VerticalGridlinesPen" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultVerticalGridlinesThickness, Mode=OneWay}"/>
-                                    </StackPanel>
-
-                                    <Line x:Name="lineForBrushAndThickness_VerticalGridlinesPen" X1="0" Y1="0" X2="0" Y2="0" Visibility="Collapsed"
-                                            StrokeThickness="{Binding ElementName=thicknessString_VerticalGridlinesPen, Path=Text, Mode=OneWay}"  
-                                            Stroke="{Binding ElementName=brushString_VerticalGridlinesPen, Path=Text}" />
-                                </StackPanel>
-                            </Grid>
-
-                            <GroupBox.ToolTip>
+                            <StackPanel.ToolTip>
                                 <StackPanel>
                                     <TextBlock Style="{StaticResource textblockHelpTTTitle}">public Pen VerticalGridlinesPen { get; set; }</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCodeSubTitle}">XAML example:</TextBlock>
                                     <TextBlock Style="{StaticResource textblockHelpTTCode}">&lt;fc:CandleChart&gt;<LineBreak/>
                                     &#160;&#160;&#160;&#160;&lt;CandleChart.VerticalGridlinesPen&gt;<LineBreak/>
-                                    &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;Pen Thickness=&quot;<Run Text="{Binding Source={x:Reference thicknessString_VerticalGridlinesPen}, Path=Text}"/>&quot;
-                                    Brush=&quot;<Run Text="{Binding Source={x:Reference brushString_VerticalGridlinesPen}, Path=Text}"/>&quot;/&gt;<LineBreak/>
+                                    &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;Pen Thickness=&quot;<Run Text="{Binding Source={x:Reference verticalGridlinesPen}, Path=SelectedPen.Thickness}"/>&quot;
+                                    Brush=&quot;<Run Text="{Binding Source={x:Reference verticalGridlinesPen}, Path=SelectedPen.Brush}"/>&quot;/&gt;<LineBreak/>
                                     &#160;&#160;&#160;&#160;&lt;/CandleChart.VerticalGridlinesPen&gt;<LineBreak/>
                                     &lt;/CandleChart&gt;</TextBlock>
                                 </StackPanel>
-                            </GroupBox.ToolTip>
-                        </GroupBox>
+                            </StackPanel.ToolTip>
+                        </StackPanel>
 
                     </StackPanel>
                 </Expander>
@@ -918,7 +875,8 @@
                             <StackPanel Style="{StaticResource LeftMargin}">
                                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                                     <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_IsCrossLinesVisible" RequestNavigate="Hyperlink_RequestNavigate">IsCrossLinesVisible</Hyperlink> =&#160;</TextBlock>
-                                    <CheckBox x:Name="isCrossLinesVisible" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsCrossLinesVisible, Mode=OneWay}"/>
+                                    <CheckBox x:Name="isCrossLinesVisible" 
+                                              IsChecked="{Binding ElementName=myCandleChart, Path=IsCrossLinesVisible, Mode=TwoWay}"/>
 
                                     <StackPanel.ToolTip>
                                         <StackPanel>
@@ -930,10 +888,10 @@
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_CrossLinesBrush" RequestNavigate="Hyperlink_RequestNavigate">CrossLinesBrush</Hyperlink> =&#160;</TextBlock>
-                                    <local:Hex8DigitTextBox x:Name="crossLinesBrush" 
-                                                    Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultCrossLinesBrush, Mode=OneWay}" 
-                                                    IsEnabled="{Binding ElementName=isCrossLinesVisible, Path=IsChecked}"/>
+                                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_CrossLinesBrush" RequestNavigate="Hyperlink_RequestNavigate">CrossLinesBrush</Hyperlink> =&#160;#</TextBlock>
+                                    <fp:Hex8DigitTextBox x:Name="crossLinesBrush" Width="70"
+                                                         Text="{Binding ElementName=myCandleChart, Path=CrossLinesBrush, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         IsEnabled="{Binding ElementName=isCrossLinesVisible, Path=IsChecked}"/>
                                     <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                                     <StackPanel.ToolTip>
@@ -951,7 +909,8 @@
                             <StackPanel Style="{StaticResource LeftMargin}">
                                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                                     <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_IsCrossPriceVisible" RequestNavigate="Hyperlink_RequestNavigate">IsCrossPriceVisible</Hyperlink> =&#160;</TextBlock>
-                                    <CheckBox x:Name="isCrossPriceVisible" IsChecked="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultIsCrossPriceVisible, Mode=OneWay}"/>
+                                    <CheckBox x:Name="isCrossPriceVisible" 
+                                              IsChecked="{Binding ElementName=myCandleChart, Path=IsCrossPriceVisible, Mode=TwoWay}"/>
 
                                     <StackPanel.ToolTip>
                                         <StackPanel>
@@ -963,8 +922,10 @@
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_CrossPriceForeground" RequestNavigate="Hyperlink_RequestNavigate">CrossPriceForeground</Hyperlink> =&#160;</TextBlock>
-                                    <local:Hex8DigitTextBox x:Name="crossPriceForeground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultCrossPriceForeground, Mode=OneWay}" IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
+                                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_CrossPriceForeground" RequestNavigate="Hyperlink_RequestNavigate">CrossPriceForeground</Hyperlink> =&#160;#</TextBlock>
+                                    <fp:Hex8DigitTextBox x:Name="crossPriceForeground" Width="70"
+                                                         Text="{Binding ElementName=myCandleChart, Path=CrossPriceForeground, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
                                     <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                                     <StackPanel.ToolTip>
@@ -977,8 +938,10 @@
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_CrossPriceBackground" RequestNavigate="Hyperlink_RequestNavigate">CrossPriceBackground</Hyperlink> =&#160;</TextBlock>
-                                    <local:Hex8DigitTextBox x:Name="crossPriceBackground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultCrossPriceBackground, Mode=OneWay}" IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
+                                    <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_CrossPriceBackground" RequestNavigate="Hyperlink_RequestNavigate">CrossPriceBackground</Hyperlink> =&#160;#</TextBlock>
+                                    <fp:Hex8DigitTextBox x:Name="crossPriceBackground" Width="70"
+                                                         Text="{Binding ElementName=myCandleChart, Path=CrossPriceBackground, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
                                     <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                                     <StackPanel.ToolTip>
@@ -998,8 +961,9 @@
                 <Expander Header="Horizontal ScrollBar">
                     <StackPanel Style="{StaticResource ExpanderContent}">
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
-                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_ScrollBarBackground" RequestNavigate="Hyperlink_RequestNavigate">ScrollBarBackground</Hyperlink> =&#160;</TextBlock>
-                            <local:Hex8DigitTextBox x:Name="scrollBarBackground" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultScrollBarBackground, Mode=OneWay}" IsEnabled="{Binding ElementName=isCrossPriceVisible, Path=IsChecked}"/>
+                            <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_ScrollBarBackground" RequestNavigate="Hyperlink_RequestNavigate">ScrollBarBackground</Hyperlink> =&#160;#</TextBlock>
+                            <fp:Hex8DigitTextBox x:Name="scrollBarBackground" Width="70"
+                                                 Text="{Binding ElementName=myCandleChart, Path=ScrollBarBackground, Converter={StaticResource symColorBrushStringConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock>&#160;(Hex #AARRGGBB format)</TextBlock>
 
                             <StackPanel.ToolTip>
@@ -1013,7 +977,8 @@
 
                         <StackPanel Orientation="Horizontal" Style="{StaticResource WithHelpTT}">
                             <TextBlock><Hyperlink NavigateUri="https://gellerda.github.io/FancyCandles/api/FancyCandles.CandleChart.html#FancyCandles_CandleChart_ScrollBarHeight" RequestNavigate="Hyperlink_RequestNavigate">ScrollBarHeight</Hyperlink> =&#160;</TextBlock>
-                            <local:DoubleTextBox x:Name="scrollBarHeight" Text="{Binding Source={StaticResource dummyCandleChartInstance}, Path=DefaultScrollBarHeight, Mode=OneWay}"/>
+                            <fp:DoubleTextBox x:Name="scrollBarHeight" 
+                                              Text="{Binding ElementName=myCandleChart, Path=ScrollBarHeight, Converter={StaticResource symStringToNumberConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <StackPanel.ToolTip>
                                 <StackPanel>

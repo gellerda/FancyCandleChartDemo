@@ -80,7 +80,8 @@
     <Compile Include="IntroWindow.xaml.cs">
       <DependentUpon>IntroWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RestrictedTextBoxes.cs" />
+    <Compile Include="MyAddInIndicators\ExponentialMovingAverage.cs" />
+    <Compile Include="ObservablePriceChartIndicatorCollection.cs" />
     <Compile Include="VM.cs" />
     <Page Include="IntroWindow.xaml">
       <SubType>Designer</SubType>
@@ -119,6 +120,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -158,9 +160,9 @@
       <Project>{f24d1444-a396-4881-ac6b-d438b97025ec}</Project>
       <Name>FancyCandles</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\FancyWaitIndicators\FancyWaitIndicators\FancyWaitIndicators.csproj">
-      <Project>{b3d3810e-3e7b-45ff-bfaf-4babedaf38e4}</Project>
-      <Name>FancyWaitIndicators</Name>
+    <ProjectReference Include="..\..\FancyPrimitives\FancyPrimitives.csproj">
+      <Project>{cefe18e3-e073-4cc7-8cb9-c277c8d5b76f}</Project>
+      <Name>FancyPrimitives</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
